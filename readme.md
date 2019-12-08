@@ -18,10 +18,8 @@ Sistema de finanzas en Php (Laravek 5.4)
 ## Instalación 
 
 - [Composer install](https://getcomposer.org/).
- Ejecutar el comando 
 - composer global require "laravel/installer"
 - composer install
-- Importar Base de datos.
 - [Importar Base de datos](https://heavydeveloper.me/finanzas/finanzasdb.sql).
 - cambiar credenciales por las tuyas en archivo .env 
 
