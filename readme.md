@@ -1,5 +1,9 @@
 <p align="center"><a href="https://www.heavydeveloper.me/heavydevelopersignos.png" target="_blank">
 <img width="150" src="https://www.heavydeveloper.me/heavydevelopersignos.png">
+</a>
+</p>
+<p align="center">
+<a style="color: #fff!important" href="https://www.heavydeveloper.me/heavydevelopersignos.png" target="_blank">
 HeavyDeveloper
 </a>
 </p>
