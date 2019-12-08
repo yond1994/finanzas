@@ -1,5 +1,7 @@
-<p align="center"><a href="https://laravel.com" target="_blank">
-<img width="150"src="https://www.heavydeveloper.me/front/images/site/mano.png"></a>
+<p align="center"><a href="https://www.heavydeveloper.me/heavydevelopersignos.png" target="_blank">
+<img width="150" src="https://www.heavydeveloper.me/heavydevelopersignos.png">
+HeavyDeveloper
+</a>
 </p>
 
 
