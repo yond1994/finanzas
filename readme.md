@@ -11,7 +11,7 @@ HeavyDeveloper
 
 ## Sistema de finanzas (Laravel)
 
-Sistema de finanzas en Php (Laravek 5.4)
+Sistema de finanzas en Php (Laravel 5.4)
 
 - Lenguaje: PHP.
 - Framework: Laravel.
@@ -20,6 +20,9 @@ Sistema de finanzas en Php (Laravek 5.4)
 ## link Demo
 
 - [Ver demo](https://finanzas.heavydeveloper.me/).
+
+USER: admin@admin.com  
+PASS: 123456
 
 ## Instalación 
 
