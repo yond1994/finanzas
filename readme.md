@@ -29,7 +29,7 @@ PASS: 123456
 - [Composer install](https://getcomposer.org/).
 - composer global require "laravel/installer"
 - composer install
-- [Importar Base de datos](https://heavydeveloper.me/finanzas/finanzasdb.sql).
+- [Importar Base de datos](https://github.com/yond1994/finanzas/blob/master/db.sql).
 - cambiar credenciales por las tuyas en archivo .env 
 
 ## Ejecutar proyecto 
