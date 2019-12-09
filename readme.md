@@ -3,7 +3,7 @@
 </a>
 </p>
 <p align="center">
-<a style="color: #fff!important" href="https://www.heavydeveloper.me/heavydevelopersignos.png" target="_blank">
+<a style="color: #fff!important" href="https://www.heavydeveloper.me" target="_blank">
 HeavyDeveloper
 </a>
 </p>
