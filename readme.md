@@ -19,7 +19,7 @@ Sistema de finanzas en Php (Laravek 5.4)
 
 ## link Demo
 
-- [Ver demo](https://heavydeveloper.me/finanzas/).
+- [Ver demo](https://finanzas.heavydeveloper.me/).
 
 ## Instalación 
 
@@ -43,5 +43,5 @@ PASS: 123456
 
 ## Conoce mis otros trabajos.
 
-[HeavyDeveloper.me](https://heavydeveloper.me/).
+[HeavyDeveloper.me](https://heavydeveloper.me/)
 
