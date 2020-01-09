@@ -1,0 +1,19 @@
+finanzas- Software de control financierp
+
+Copyright 2011-2021 por los contribuyentes
+
+Este programa es software libre; puedes redistribuirlo y / o modificarlo
+bajo los términos de la Licencia Pública General GNU publicada por
+la Fundación de Software Libre; ya sea la versión 2 de la Licencia, o
+(a su elección) cualquier versión posterior.
+
+Este programa se distribuye con la esperanza de que sea útil,
+pero SIN NINGUNA GARANTÍA; incluso sin la garantía implícita de
+COMERCIABILIDAD o APTITUD PARA UN PROPÓSITO EN PARTICULAR. Ver el
+Licencia pública general de GNU para más detalles.
+
+Debería haber recibido una copia de la Licencia Pública General de GNU
+junto con este programa; si no, escriba al software libre
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 EE. UU.
+
+Autor: https://www.heavydeveloper.me/ 
