@@ -18,9 +18,7 @@ HeavyDeveloper
 
 
 
-## link Demo
-
-- [Ver demo](https://finanzas.heavydeveloper.me/).
+## Info
 
 USER: admin@admin.com  
 PASS: 123456
