@@ -7,7 +7,7 @@ Sistema de finanzas en Php (Laravel 5.4)
 - Base de datos: Mysql.
 
 <p align="center"><a href="https://www.heavydeveloper.me/heavydevelopersignos.png" target="_blank">
-<img width="150" src="https://www.heavydeveloper.me/heavydevelopersignos.png">
+<img width="150" src="https://www.heavydeveloper.me/logo.png">
 </a>
 </p>
 <p align="center">
