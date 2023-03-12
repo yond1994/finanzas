@@ -9,11 +9,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
-use App\summary;
-use App\account;
-use App\categories;
-use App\settings;
-use App\permissions;
+use App\Models\Summary;
+use App\Models\Account;
+use App\Models\Categories;
+use App\Models\Settings;
+use App\Models\Permissions as Permissions;
 use Datetime;
 use Auth;
 
@@ -45,21 +45,21 @@ class HomeController extends Controller
 
     $log = Auth::id();
     $user=array();
-    $user = permissions::where('id_user',$log)->first();
+    $user = Permissions::where('id_user',$log)->first();
       if($user==null){
         
-        $per = new permissions;
+        $per = new Permissions;
         $per->id_user=$log;
         $per->save();
 
       }
-    $r=(new summaryController)->pass($act='movimientos');
+    $r=(new SummaryController)->pass($act='movimientos');
     if($r>0 ){  
 
           $hoy=date('Y-m-d',strtotime('today'));
           $hoyy=date('Y-m-d 00:00:00',strtotime('today'));
 
-          $summa = summary::where('created_at','=',$hoyy)->limit(2)->get();
+          $summa = Summary::where('created_at','=',$hoyy)->limit(2)->get();
           $alerta = array();
           foreach ($summa as $s) {
             
@@ -72,18 +72,18 @@ class HomeController extends Controller
 
           }
            
-          $summary = summary::where('created_at','<=',$hoy)->orderBy('id','desc')->limit(5)->get();
+          $summary = Summary::where('created_at','<=',$hoy)->orderBy('id','desc')->limit(5)->get();
 
 
 
 
-          $categories = categories::all();
-          $divisa = settings::where('name','divisa')->first();
-          $account = account::orderBy('id','desc')->limit(5)->get();
+          $categories = Categories::all();
+          $divisa = Settings::where('name','divisa')->first();
+          $account = Account::orderBy('id','desc')->limit(5)->get();
          
           $response =array();
           foreach ($account as $a) {
-              $tmp = summary::where('created_at','<=',$hoy)->where('account_id',$a->id)->get();
+              $tmp = Summary::where('created_at','<=',$hoy)->where('account_id',$a->id)->get();
               $total[$a->id] = 0;
               foreach ($tmp as $t) {
 
@@ -102,7 +102,7 @@ class HomeController extends Controller
 
         
            
-            $ultimo = summary::whereBetween('created_at', [$mes, $hoy])->get();
+            $ultimo = Summary::whereBetween('created_at', [$mes, $hoy])->get();
          
          
           $add = 0;
@@ -121,11 +121,11 @@ class HomeController extends Controller
 
 
           foreach ($summary as $s) {
-            $name_account = account::find($s->account_id);
+            $name_account = Account::find($s->account_id);
             $s->setAttribute('name_account',$name_account->name);
           }
           foreach ($summary as $a) {
-            $name_categories = categories::find($a->categories_id);
+            $name_categories = Categories::find($a->categories_id);
             $a->setAttribute('name_categories',$name_categories->name);
           }
           return view('vendor.adminlte.home',['summary'=>$account,'account'=>$summary,'add'=>$add,'out'=>$out,'divisa'=>$divisa,'alerta'=>$alerta]);
@@ -143,9 +143,9 @@ class HomeController extends Controller
         if((isset($start)) and (isset($finish))){
           $start = new Datetime($start);
           $finish = new Datetime($finish);
-          $summary = summary::whereBetween('created_at', [$start, $finish])->get();
+          $summary = Summary::whereBetween('created_at', [$start, $finish])->get();
         }else{
-          $summary = summary::all();
+          $summary = Summary::all();
         }
 
         

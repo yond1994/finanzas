@@ -3,36 +3,36 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\summary;
-use App\account;
-use App\categories;
-use App\attached;
-use App\attributes;
-use App\User;
+use App\Models\Summary;
+use App\Models\Account;
+use App\Models\Categories;
+use App\Models\Attached;
+use App\Models\Attributes;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
-class detalleController extends Controller
+class DetalleController extends Controller
 {
     
 
     public function view(Request $request, $id){
 
-        $r=(new summaryController)->pass($act='cuentas');
+        $r=(new SummaryController)->pass($act='cuentas');
         if($r>0){
 
-            // $categories = categories::all();
-            $data = summary::where('id',$id)->first();
-            $account = account::where('id',$data->account_id)->first();
-            $categories = categories::where('id',$data->categories_id)->first();
-            $attributes = attributes::where('id',$data->id_attr)->first();
+            // $categories = Categories::all();
+            $data = Summary::where('id',$id)->first();
+            $account = Account::where('id',$data->account_id)->first();
+            $categories = Categories::where('id',$data->categories_id)->first();
+            $attributes = Attributes::where('id',$data->id_attr)->first();
             $usuario = User::where('id',$data->id_autor)->first();
 
             if($usuario==null){
              $usuario=array();
             }
           
-            if($attached = attached::where('summary_id',$id)->exists()){
-            	$attached = attached::where('summary_id',$id)->first();
+            if($attached = Attached::where('Summary_id',$id)->exists()){
+            	$attached = Attached::where('Summary_id',$id)->first();
             	$data->setAttribute('attached',$attached);
             }else{
             	$data->setAttribute('attached',null);
@@ -49,18 +49,18 @@ class detalleController extends Controller
             return view('vendor.adminlte.detalle.detalle',['data'=>$data,'user'=>$usuario]);
 
         }else{
-             return view('vendor.adminlte.permission',['summary'=>null]);
+             return view('vendor.adminlte.permission',['Summary'=>null]);
         }
 
   }
 
   public function downloadFile($id){
-        $r=(new summaryController)->pass($act='cuentas');
+        $r=(new SummaryController)->pass($act='cuentas');
         if($r>0){
-    		$data_file = attached::find($id);
+    		$data_file = Attached::find($id);
     		return response()->file(storage_path('app/public/'.$data_file->path));
         }else{
-             return view('vendor.adminlte.permission',['summary'=>null]);
+             return view('vendor.adminlte.permission',['Summary'=>null]);
         }
     }
     

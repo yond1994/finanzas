@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\attached;
-use App\summary;
+use App\Models\Attached;
+use App\Models\Summary;
 use Datetime;
-use App\bitacora;
+use App\Models\Bitacora;
 use Auth;
 
 
-class attachedController extends Controller
+class AttachedController extends Controller
 {
     public function index()
    {
-   	   $r=(new summaryController)->pass($act='adjuntos');
+   	   $r=(new SummaryController)->pass($act='adjuntos');
         if($r>0){
-        $attached = attached::all();
+        $attached = Attached::all();
         	return view('vendor.adminlte.attached.attached',['attached'=>$attached]);
     	}else{
     		return view('vendor.adminlte.permission',['summary'=>null]);
@@ -25,7 +25,7 @@ class attachedController extends Controller
 
    public function save(Request $request)
 	{	
-		$r=(new summaryController)->pass($act='adjuntos');
+		$r=(new SummaryController)->pass($act='adjuntos');
         if($r==1 || $r==2 || $r==3 || $r==6 ){
     	$hoy = new Datetime ('now');
      	$log = Auth::id();
@@ -37,7 +37,7 @@ class attachedController extends Controller
 			$file = $request->path->store('attached','public');
 		}
 	
-		$id=attached::insertGetId([
+		$id=Attached::insertGetId([
 	        'path' =>$file,
 	        'created_at' => $hoy,
 	        'updated_at'=>   $hoy,
@@ -45,7 +45,7 @@ class attachedController extends Controller
         ]);    
 
 
-	  $bitacora =  new bitacora;
+	  $bitacora =  new Bitacora;
       $bitacora->type="add";
       $bitacora->created_date = $hoy;
       $bitacora->activity="Documento";
@@ -62,10 +62,10 @@ class attachedController extends Controller
 
 	public function nuevo(Request $request, $id){
 
-		$r=(new summaryController)->pass($act='adjuntos');
+		$r=(new SummaryController)->pass($act='adjuntos');
         if($r==1 || $r==2 || $r==3 || $r==6 ){
 
-			$data = summary::where('id',$id)->first();
+			$data = Summary::where('id',$id)->first();
 			return view('vendor.adminlte.attached.create',['data'=>$data]);
 		}else{
 	    		return view('vendor.adminlte.permission',['summary'=>null]);
@@ -74,10 +74,10 @@ class attachedController extends Controller
 	}
 	public function edit(Request $request, $id){
 
-		$r=(new summaryController)->pass($act='adjuntos');
+		$r=(new SummaryController)->pass($act='adjuntos');
         if($r==1 || $r==2 || $r==4 || $r==7 ){
 
-		$data = attached::where('id',$id)->first();
+		$data = Attached::where('id',$id)->first();
 		return view('vendor.adminlte.attached.edit',['data'=>$data]);
 
 		}else{
@@ -98,12 +98,12 @@ class attachedController extends Controller
 		}
 
 
-        $attached = attached::find($id);
+        $attached = Attached::find($id);
         $attached->path = $file;
 		$attached->updated_at = $hoy;
 		$attached->save();
 
-		$bitacora = new bitacora;
+		$bitacora = new Bitacora;
         $bitacora->created_date = $hoy;
         $bitacora->type="update";
         $bitacora->id_activity=$id;
@@ -117,10 +117,10 @@ class attachedController extends Controller
 	public function destroy( $id)
 	{
 		
-		$r=(new summaryController)->pass($act='adjuntos');
+		$r=(new SummaryController)->pass($act='adjuntos');
         if($r==1 || $r==5 || $r==6 || $r==7){
 
-		$attached = attached::find($id);
+		$attached = Attached::find($id);
         $attached->delete();
        	return redirect('attached/attached');
 
