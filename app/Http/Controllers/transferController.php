@@ -3,35 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\account;
-use App\categories;
-use App\summary;
-use App\settings;
-use App\attached;
-use App\bitacora;
-use App\transfer;
+use App\Models\Account;
+use App\Models\Categories;
+use App\Models\Summary;
+use App\Models\Settings;
+use App\Models\Attached;
+use App\Models\Bitacora;
+use App\Models\Transfer;
 use Auth;
 use Datetime;
 
 
-class transferController extends Controller
+class TransferController extends Controller
 {   
 
       public function totales()
    {    
-       $r=(new summaryController)->pass($act='transferencia');
+       $r=(new SummaryController)->pass($act='transferencia');
        if($r>0 ){  
         $hoy=date('Y-m-d',strtotime('today + 1 days'));
-        $summary = summary::where('created_at','<=',$hoy)->orderBy('id','desc')->get();
+        $summary = Summary::where('created_at','<=',$hoy)->orderBy('id','desc')->get();
         $total =array();
-        // $summary = summary::all();
-        $categories = categories::all();
-        $account = account::all();
-        $divisa = settings::where('name','divisa')->first();
+        // $summary = Summary::all();
+        $categories = Categories::all();
+        $account = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
        
         $response =array();
         foreach ($account as $a) {
-          $tmp = summary::where('created_at','<=',$hoy)->where('account_id',$a->id)->get();
+          $tmp = Summary::where('created_at','<=',$hoy)->where('account_id',$a->id)->get();
           $total[$a->id] = 0;
           foreach ($tmp as $t) {
 
@@ -60,15 +60,15 @@ class transferController extends Controller
 
    public function consul($id){
 
-    $r=(new summaryController)->pass($act='transferencia');
+    $r=(new SummaryController)->pass($act='transferencia');
        if($r>0 ){  
         $hoy=date('Y-m-d',strtotime('today + 1 days'));
   
-        $account = account::all();
-        $divisa = settings::where('name','divisa')->first();
+        $account = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
       
         foreach ($account as $a) {
-          $tmp = summary::where('created_at','<=',$hoy)->where('account_id',$id)->get();
+          $tmp = Summary::where('created_at','<=',$hoy)->where('account_id',$id)->get();
 
           
           $total = 0;
@@ -95,23 +95,23 @@ class transferController extends Controller
     
     public function crear(Request $request){
 
-       $r=(new summaryController)->pass($act='transferencia');
+       $r=(new SummaryController)->pass($act='transferencia');
        if($r==1 || $r==2 || $r==3 || $r==6 ){  
 
-   		  $summary = summary::all();
-        $categories = categories::all();
-        $account = account::all();
-        $divisa = settings::where('name','divisa')->first();
+   		  $summary = Summary::all();
+        $categories = Categories::all();
+        $account = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
 
     
         foreach ($summary as $s) {
-          $name_account = account::find($s->account_id);
+          $name_account = Account::find($s->account_id);
           $s->setAttribute('name_account',$name_account->name);
-          $name_categories = categories::find($s->categories_id);
+          $name_categories = Categories::find($s->categories_id);
           $s->setAttribute('name_categories',$name_categories->name);
 
-          if(attached::where('summary_id',$s->id)->exists()){
-            $data_attached = attached::where('summary_id',$s->id)->first();
+          if(Attached::where('summary_id',$s->id)->exists()){
+            $data_attached = Attached::where('summary_id',$s->id)->first();
             $s->setAttribute('attached',$data_attached);
 
           }else{
@@ -134,7 +134,7 @@ class transferController extends Controller
 
      $str = str_replace(",", "", $request->amount);
 
-      $valores_add = summary::insertGetId([
+      $valores_add = Summary::insertGetId([
       	'created_at' =>  $request ->created_at,
       	'concept' => "Transferencia Recibida",
       	'type' =>$type = 'add',
@@ -145,7 +145,7 @@ class transferController extends Controller
       	'categories_id' => $request->categories_id,
       	]);
         
-      $bitacora =  new bitacora;
+      $bitacora =  new Bitacora;
       $bitacora->type="transfer";
       $bitacora->created_date = $hoyy;
       $bitacora->activity="transferencia";
@@ -154,7 +154,7 @@ class transferController extends Controller
       $bitacora->save();
  
 
-      $valores_out=summary::insertGetId([
+      $valores_out=Summary::insertGetId([
       	'created_at' => $request->created_at,
       	'concept' =>  "Transferencia Enviada ",
       	'type' =>$type = 'out',
@@ -165,7 +165,7 @@ class transferController extends Controller
       	'categories_id' => $request->categories_id,
       	]);
        
-      $bitacora =  new bitacora;
+      $bitacora =  new Bitacora;
       $bitacora->type="transfer";
       $bitacora->created_date = $hoyy;
       $bitacora->activity="transferencia";
@@ -181,11 +181,11 @@ class transferController extends Controller
         'id_out'=>$id_out=$valores_out,
         ]);
 
-      $summary = summary::find($valores_add);
+      $summary = Summary::find($valores_add);
       $summary->id_transfer=$transfer;
       $summary->save();
 
-      $summary = summary::find($valores_out);
+      $summary = Summary::find($valores_out);
       $summary->id_transfer=$transfer;
       $summary->save();
 
@@ -195,7 +195,7 @@ class transferController extends Controller
 
   public function edit(Request $request, $id){
     
-    $r=(new summaryController)->pass($act='transferencia');
+    $r=(new SummaryController)->pass($act='transferencia');
        if($r==1 || $r==2 || $r==4 || $r==7 ){ 
 
        $transfer= transfer::where('id',$id)->get(); 
@@ -205,9 +205,9 @@ class transferController extends Controller
             $b=$t->id_out;
         }
 
-    $account = account::all();
-    $out = summary::where('id',$a)->first();
-    $add = summary::where('id',$b)->first();
+    $account = Account::all();
+    $out = Summary::where('id',$a)->first();
+    $add = Summary::where('id',$b)->first();
 
       return view('vendor.adminlte.transfer.edit',['add'=>$add,'out'=>$out,'account'=>$account]);
       }else{
@@ -230,7 +230,7 @@ class transferController extends Controller
         }
 
     //transferencia resivida
-    $summary = summary::find($a);
+    $summary = Summary::find($a);
     $summary->created_at = $request->created_at;
     $summary->concept ="Transferencia Recibida";
     $summary->type = "add";
@@ -240,7 +240,7 @@ class transferController extends Controller
     $summary->categories_id  = $request->categories_id  ;
     $summary->save();
 
-    $bitacora = new bitacora;
+    $bitacora = new Bitacora;
     $bitacora->created_date = $hoy;
     $bitacora->type="update";
     $bitacora->id_activity=$a;
@@ -250,7 +250,7 @@ class transferController extends Controller
 
 
     //transferencia enviada
-    $summary = summary::find($b);
+    $summary = Summary::find($b);
     $summary->created_at = $request->created_at;
     $summary->concept ="Transferencia Enviada ";
     $summary->type = "out";
@@ -260,7 +260,7 @@ class transferController extends Controller
     $summary->categories_id  = $request->categories_id;
     $summary->save();
 
-    $bitacora = new bitacora;
+    $bitacora = new Bitacora;
     $bitacora->created_date = $hoy;
     $bitacora->type="update";
     $bitacora->id_activity=$b;

@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\categories;
-use App\summary;
-use App\attributes;
-use App\bitacora;
+use App\Models\Categories;
+use App\Models\Summary;
+use App\Models\Attributes;
+use App\Models\Bitacora;
 use Auth;
 
-class categoriesController extends Controller
+class CategoriesController extends Controller
 {
    public function index()
    {	
-   		$r=(new summaryController)->pass($act='categoria');
+   		$r=(new SummaryController)->pass($act='categoria');
         if($r>0){
 
-	        $categories = categories::all();
+	        $categories = Categories::all();
 	        return view('vendor.adminlte.categories.categories',['categories'=>$categories]);
 
     	}else{
@@ -26,7 +26,7 @@ class categoriesController extends Controller
 
    public function save(Request $request)
 	{   
-		$r=(new summaryController)->pass($act='categoria');
+		$r=(new SummaryController)->pass($act='categoria');
         if($r==1 || $r==2 || $r==3  || $r==6){
 		$hoy=date('Y-m-d H:m:s',strtotime('today'));
       	$log = Auth::id();
@@ -36,9 +36,9 @@ class categoriesController extends Controller
 	    	'description' => $request->description,
 	    	'type' => $request->type,
 	    	);
-	   	$id=categories::insertGetId($valores);
+	   	$id=Categories::insertGetId($valores);
 
-		  $bitacora =  new bitacora;
+		  $bitacora =  new Bitacora;
 		  $bitacora->type="add";
 		  $bitacora->created_date = $hoy;
 		  $bitacora->activity="categorias";
@@ -54,11 +54,11 @@ class categoriesController extends Controller
 
 	public function edit(Request $request, $id){
 
-		$r=(new summaryController)->pass($act='categoria');
+		$r=(new SummaryController)->pass($act='categoria');
         if($r==1 || $r==2 || $r==4  || $r==7){
 
-		$data = categories::where('id',$id)->first();
-		$data1 = attributes::where('id_categorie',$id)->get();
+		$data = Categories::where('id',$id)->first();
+		$data1 = Attributes::where('id_categorie',$id)->get();
 
 		return view('vendor.adminlte.categories.edit',['data'=>$data,'data1'=>$data1]);
 		
@@ -86,20 +86,20 @@ class categoriesController extends Controller
 					    		'id_categorie' => $id,
 					    		);
 				    	if($ids[$n]==0){
-				    		attributes::insert($valores);
+				    		Attributes::insert($valores);
 				    	}else{
-				    		attributes::where('id',$ids[$n])->update($valores);
+				    		Attributes::where('id',$ids[$n])->update($valores);
 				    	}
 				    
 		}
 
-        $categories = categories::find($id);
+        $categories = Categories::find($id);
         $categories->name = $request->name;
 		$categories->description = $request->description;
 		$categories->type = $request->type;
 		$categories->save();
 
-		$bitacora = new bitacora;
+		$bitacora = new Bitacora;
         $bitacora->created_date = $hoy;
         $bitacora->type="update";
         $bitacora->id_activity=$id;
@@ -112,13 +112,13 @@ class categoriesController extends Controller
 
 	public function destroy( $id)
 	{	
-		$r=(new summaryController)->pass($act='categoria');
+		$r=(new SummaryController)->pass($act='categoria');
         if($r==1 || $r==5 || $r==6  || $r==7){
 
 		$hoy=date('Y-m-d H:m:s',strtotime('today'));
         $log = Auth::id();
 
-		if($data1 = summary::where('categories_id',$id)->exists()){
+		if($data1 = Summary::where('categories_id',$id)->exists()){
 			$messaje = array(
                 'status' => 'error',
                 'messaje' => 'no se pudo Eliminar',
@@ -127,13 +127,13 @@ class categoriesController extends Controller
 		}else{
 
 
-		$categories = categories::find($id);
+		$categories = Categories::find($id);
 		
-		$data = categories::where('id',$id)->first();
-    	$attributes = attributes::where('id_categorie',$id)->delete();
+		$data = Categories::where('id',$id)->first();
+    	$attributes = Attributes::where('id_categorie',$id)->delete();
         $categories->delete();
 
-        $bitacora = new bitacora;
+        $bitacora = new Bitacora;
         $bitacora->created_date = $hoy;
         $bitacora->type="delete";
         $bitacora->id_activity=$id;
@@ -148,13 +148,13 @@ class categoriesController extends Controller
     }
      public function destroyattr( $id)
 	{	
-		$r=(new summaryController)->pass($act='categoria');
+		$r=(new SummaryController)->pass($act='categoria');
         if($r==1 || $r==5 || $r==6  || $r==7){
 
 			$hoy=date('Y-m-d H:m:s',strtotime('today'));
 	        $log = Auth::id();
 
-			if($data1 = summary::where('id_attr',$id)->exists()){
+			if($data1 = Summary::where('id_attr',$id)->exists()){
 				$messaje = array(
 	                'status' => 'error',
 	                'messaje' => 'no se pudo Eliminar',
@@ -162,10 +162,10 @@ class categoriesController extends Controller
 		     return view('vendor.adminlte.categories.error',['messaje'=>$messaje]);
 			}else{
 
-			$categories = attributes::find($id);
+			$categories = Attributes::find($id);
 	        $categories->delete();
 
-	        $bitacora = new bitacora;
+	        $bitacora = new Bitacora;
 	        $bitacora->created_date = $hoy;
 	        $bitacora->type="delete";
 	        $bitacora->id_activity=$id;
@@ -181,7 +181,7 @@ class categoriesController extends Controller
 
     public function view_attr($id=null){
     	
-    			$categorie = categories::find($id);
+    			$categorie = Categories::find($id);
     			return view('vendor.adminlte.categories.attr',['categorie'=>$categorie]);
     		
     }
@@ -198,14 +198,14 @@ class categoriesController extends Controller
 		    		'value' => $values[$n],
 		    		'id_categorie' => $id
 		    		);
-		    	attributes::insert($valores);
+		    	Attributes::insert($valores);
 	    	}
 	    	return redirect('categories/categories');
     	
     }
 
     public function get_all($id){
-    	$data = attributes::where('id_categorie',$id)->get();;
+    	$data = Attributes::where('id_categorie',$id)->get();;
     	return response()->json($data);
     }
 }

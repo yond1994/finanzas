@@ -3,33 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\summary;
-use App\account;
-use App\categories;
-use App\settings;
+use App\Models\Summary;
+use App\Models\Account;
+use App\Models\Categories;
+use App\Models\Settings;
 use Datetime;
 use Auth;
 
 
 
-class totalController extends Controller
+class TotalController extends Controller
 {
       public function totales()
    {    
 
-         $r=(new summaryController)->pass($act='saldo');
+         $r=(new SummaryController)->pass($act='saldo');
       if($r>0 ){  
         $hoy=date('Y-m-d',strtotime('today'));
-        $summary = summary::where('created_at','<=',$hoy)->orderBy('id','desc')->get();
-        $categories = categories::all();
-        $account = account::all();
-        $account2 = account::all();
-        $divisa = settings::where('name','divisa')->first();
+        $summary = Summary::where('created_at','<=',$hoy)->orderBy('id','desc')->get();
+        $categories = Categories::all();
+        $account = Account::all();
+        $account2 = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
        
        	$response =array();
         $total =array();
         foreach ($account as $a) {
-        	$tmp = summary::where('created_at','<=',$hoy)->where('account_id',$a->id)->get();
+        	$tmp = Summary::where('created_at','<=',$hoy)->where('account_id',$a->id)->get();
         	$total[$a->id] = 0;
         	foreach ($tmp as $t) {
 
@@ -52,7 +52,7 @@ class totalController extends Controller
            //total add
         foreach ($account as $a) {
          $totale = 0;   
-            $tmp = summary::where('created_at','>',$hoy)->get();
+            $tmp = Summary::where('created_at','>',$hoy)->get();
         
             foreach ($tmp as $t) {
 
@@ -67,7 +67,7 @@ class totalController extends Controller
          //total out
         foreach ($account as $b) {
          $totals = 0;   
-            $tmp = summary::where('created_at','>',$hoy)->get();
+            $tmp = Summary::where('created_at','>',$hoy)->get();
          
             foreach ($tmp as $t) {
 
@@ -81,7 +81,7 @@ class totalController extends Controller
         //total final
          foreach ($account as $c) {
          $totalf = 0;   
-            $tmp = summary::where('created_at','>',$hoy)->get();
+            $tmp = Summary::where('created_at','>',$hoy)->get();
          
             foreach ($tmp as $t) {
 
@@ -112,7 +112,7 @@ class totalController extends Controller
          //mes1
          foreach ($account2 as $c) {
          $totalm1 = 0;   
-        $tmp = summary::where('created_at','<', $finish)->get();
+        $tmp = Summary::where('created_at','<', $finish)->get();
          
             foreach ($tmp as $t) {
 
@@ -143,7 +143,7 @@ class totalController extends Controller
            //mes3
          foreach ($account2 as $c) {
          $totalm3 = 0;   
-        $tmp = summary::where('created_at','<',$finish)->get();
+        $tmp = Summary::where('created_at','<',$finish)->get();
          
             foreach ($tmp as $t) {
 
@@ -173,7 +173,7 @@ class totalController extends Controller
            //mes6
          foreach ($account2 as $c) {
          $totalm6 = 0;   
-        $tmp = summary::where('created_at','<',$finish)->get();
+        $tmp = Summary::where('created_at','<',$finish)->get();
          
             foreach ($tmp as $t) {
 

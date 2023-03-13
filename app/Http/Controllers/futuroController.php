@@ -3,35 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\summary;
-use App\account;
-use App\categories;
-use App\attached;
-use App\settings;
-use App\bitacora;
-use App\transfer;
-use App\attributes;
-use App\tours;
-use APP\attributestours;
+use App\Models\Summary;
+use App\Models\Account;
+use App\Models\Categories;
+use App\Models\Attached;
+use App\Models\Settings;
+use App\Models\Bitacora;
+use App\Models\Transfer;
+use App\Models\Attributes;
+use App\Models\Tours;
+use APP\Models\Attributestours;
 use Auth;
 use Datetime;
 
-class futuroController extends Controller
+class FuturoController extends Controller
 {
 
     public function index(Request $request)
     {
-        $r = (new summaryController)->pass($act = 'm_futuros');
+        $r = (new SummaryController)->pass($act = 'm_futuros');
         if ($r > 0) {
             $hoy = new DateTime('now');
-            $alerta = summary::where('created_at', '<=', $hoy)->where('future', '=', 2)->get();
+            $alerta = Summary::where('created_at', '<=', $hoy)->where('future', '=', 2)->get();
 
-            $summary = summary::where('created_at', '>', $hoy)->get();
+            $summary = Summary::where('created_at', '>', $hoy)->get();
             // $summary = summary::all();
-            $categories = categories::all();
-            $tours = tours::all();
-            $account = account::all();
-            $divisa = settings::where('name', 'divisa')->first();
+            $categories = Categories::all();
+            $tours = Tours::all();
+            $account = Account::all();
+            $divisa = Settings::where('name', 'divisa')->first();
 
             $total = array();
             $totaliva = array();
@@ -53,45 +53,45 @@ class futuroController extends Controller
 
                 if ($tipo == 1) {
                     $filter[] = array('categories_id', '=', $tipo);
-                    $summary = summary::where($filter)->where('created_at', '>', $hoy)->get();
+                    $summary = Summary::where($filter)->where('created_at', '>', $hoy)->get();
 
 
                 } else {
                     $filter[] = array('type', '=', $tipo);
-                    $summary = summary::where($filter)->where('created_at', '>', $hoy)->get();
+                    $summary = Summary::where($filter)->where('created_at', '>', $hoy)->get();
                 }
             }
             if (isset($cuentas)) {
 
                 $filter[] = array('account_id', '=', $cuentas);
-                $summary = summary::where($filter)->where('created_at', '>', $hoy)->get();
+                $summary = Summary::where($filter)->where('created_at', '>', $hoy)->get();
 
             }
             if (isset($categorias)) {
                 $filter[] = array('categories_id', '=', $categorias);
-                $summary = summary::where($filter)->where('created_at', '>', $hoy)->get();
+                $summary = Summary::where($filter)->where('created_at', '>', $hoy)->get();
 
             }
             if (isset($subcategorias)) {
                 $filter[] = array('id_attr', '=', $subcategorias);
-                $summary = summary::where($filter)->where('created_at', '>', $hoy)->get();
+                $summary = Summary::where($filter)->where('created_at', '>', $hoy)->get();
             }
 
             if (isset($tf)) {
                 $filter[] = array('tours_id', '=', $tf);
-                $summary = summary::where($filter)->where('created_at', '>', $hoy)->get();
+                $summary = Summary::where($filter)->where('created_at', '>', $hoy)->get();
 
             }
             if (isset($subcatetours)) {
                 $filter[] = array('id_attr_tours', '=', $subcatetours);
-                $summary = summary::where($filter)->where('created_at', '>', $hoy)->get();
+                $summary = Summary::where($filter)->where('created_at', '>', $hoy)->get();
 
             }
             if ((isset($start)) and (isset($finish))) {
 
                 $start = new Datetime($start);
                 $finish = new Datetime($finish);
-                $summary = summary::whereBetween('created_at', [$start, $finish])->where($filter)->get();
+                $summary = Summary::whereBetween('created_at', [$start, $finish])->where($filter)->get();
             } elseif ((isset($dias))) {
 
                 if ($dias == 30) {
@@ -106,33 +106,33 @@ class futuroController extends Controller
                 if ($dias == 1) {
                     $start = date('Y-m-d', strtotime('today + 1 days'));
                 }
-                $summary = summary::whereBetween('created_at', [$hoy, $start])->where($filter)->get();
+                $summary = Summary::whereBetween('created_at', [$hoy, $start])->where($filter)->get();
             } else {
-                $summary = summary::where('created_at', '>', $hoy)->get();
+                $summary = Summary::where('created_at', '>', $hoy)->get();
             }
 
 
             foreach ($summary as $s) {
-                $name_account = account::find($s->account_id);
+                $name_account = Account::find($s->account_id);
                 $s->setAttribute('name_account', $name_account->name);
 
-                $name_categories = categories::find($s->categories_id);
+                $name_categories = Categories::find($s->categories_id);
                 $s->setAttribute('name_categories', $name_categories->name);
 
-                $name_tours = tours::find($s->tours_id);
+                $name_tours = Tours::find($s->tours_id);
                 if ($name_tours != null) {
                     $s->setAttribute('name_tours', $name_tours->name);
                 }
 
-                if (attached::where('summary_id', $s->id)->exists()) {
-                    $data_attached = attached::where('summary_id', $s->id)->first();
+                if (Attached::where('summary_id', $s->id)->exists()) {
+                    $data_attached = Attached::where('summary_id', $s->id)->first();
                     $s->setAttribute('attached', $data_attached);
                 } else {
                     $s->setAttribute('attached', null);
                 }
 
-                if (attributes::where('id_categorie', $s->account_id)->exists()) {
-                    $data_attributes = attributes::where('id_categorie', $s->account_id)->first();
+                if (Attributes::where('id_categorie', $s->account_id)->exists()) {
+                    $data_attributes = Attributes::where('id_categorie', $s->account_id)->first();
                     $s->setAttribute('attributes', $data_attributes);
                 } else {
                     $s->setAttribute('attributes', null);
@@ -142,27 +142,27 @@ class futuroController extends Controller
             //alerta
 
             foreach ($alerta as $s) {
-                $name_account = account::find($s->account_id);
+                $name_account = Account::find($s->account_id);
                 $s->setAttribute('name_account', $name_account->name);
 
-                $name_categories = categories::find($s->categories_id);
+                $name_categories = Categories::find($s->categories_id);
                 $s->setAttribute('name_categories', $name_categories->name);
 
 
-                $name_tours = tours::find($s->tours_id);
+                $name_tours = Tours::find($s->tours_id);
                 if ($name_tours != null) {
                     $s->setAttribute('name_tours', $name_tours->name);
                 }
 
-                if (attached::where('summary_id', $s->id)->exists()) {
-                    $data_attached = attached::where('summary_id', $s->id)->first();
+                if (Attached::where('summary_id', $s->id)->exists()) {
+                    $data_attached = Attached::where('summary_id', $s->id)->first();
                     $s->setAttribute('attached', $data_attached);
                 } else {
                     $s->setAttribute('attached', null);
                 }
 
-                if (attributes::where('id_categorie', $s->account_id)->exists()) {
-                    $data_attributes = attributes::where('id_categorie', $s->account_id)->first();
+                if (Attributes::where('id_categorie', $s->account_id)->exists()) {
+                    $data_attributes = Attributes::where('id_categorie', $s->account_id)->first();
                     $s->setAttribute('attributes', $data_attributes);
                 } else {
                     $s->setAttribute('attributes', null);
@@ -246,15 +246,15 @@ class futuroController extends Controller
     public function edit(Request $request, $id)
     {
 
-        $r = (new summaryController)->pass($act = 'm_futuros');
+        $r = (new SummaryController)->pass($act = 'm_futuros');
         if ($r == 1 || $r == 2 || $r == 4 || $r == 7) {
 
-            $categories = categories::all();
-            $account = account::all();
-            $data = summary::where('id', $id)->first();
+            $categories = Categories::all();
+            $account = Account::all();
+            $data = Summary::where('id', $id)->first();
 
-            if ($attached = attached::where('summary_id', $id)->exists()) {
-                $attached = attached::where('summary_id', $id)->first();
+            if ($attached = Attached::where('summary_id', $id)->exists()) {
+                $attached = Attached::where('summary_id', $id)->first();
                 $data->setAttribute('attached', $attached);
             } else {
                 $data->setAttribute('attached', null);
@@ -272,7 +272,7 @@ class futuroController extends Controller
         $hoy = date('Y-m-d H:m:s', strtotime('today'));
         $log = Auth::id();
 
-        $summary = summary::find($id);
+        $summary = Summary::find($id);
         $summary->created_at = $request->created_at;
         $summary->concept = $request->concept;
         $summary->type = $request->type;
@@ -285,7 +285,7 @@ class futuroController extends Controller
         $summary->categories_id = $request->categories_id;
         $summary->save();
 
-        $bitacora = new bitacora;
+        $bitacora = new Bitacora;
         $bitacora->created_date = $hoy;
         $bitacora->type = "update";
         $bitacora->id_activity = $id;
@@ -299,18 +299,18 @@ class futuroController extends Controller
     public function acept(Request $request, $id)
     {
 
-        $r = (new summaryController)->pass($act = 'm_futuros');
+        $r = (new SummaryController)->pass($act = 'm_futuros');
         if ($r == 1 || $r == 2 || $r == 4 || $r == 7) {
 
             $hoy = date('Y-m-d H:m:s', strtotime('today'));
             $log = Auth::id();
 
-            $summary = summary::find($id);
+            $summary = Summary::find($id);
             $summary->id_autor = $log;
             $summary->future = 1;
             $summary->save();
 
-            $bitacora = new bitacora;
+            $bitacora = new Bitacora;
             $bitacora->created_date = $hoy;
             $bitacora->type = "update";
             $bitacora->id_activity = $id;

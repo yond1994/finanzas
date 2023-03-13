@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\summary;
-use App\account;
-use App\categories;
-use App\attached;
-use App\settings;
-use App\bitacora;
-use App\transfer;
-use App\attributes;
-use App\tours;
-use App\attributestours;
+use App\Models\Summary;
+use App\Models\Account;
+use App\Models\Categories;
+use App\Models\Attached;
+use App\Models\Settings;
+use App\Models\Bitacora;
+use App\Models\Transfer;
+use App\Models\Attributes;
+use App\Models\Tours;
+use App\Models\Attributestours;
 use Auth;
 use Datetime;
 
-class pdfController extends Controller
+class PdfController extends Controller
 {
 
 
@@ -36,30 +36,30 @@ class pdfController extends Controller
 
     	$hoy = new DateTime('now');
 
-        $data = summary::where('created_at','<=',$hoy)->get();
-        // $summary = summary::all();
-        $categories = categories::all();
-        $account = account::all();
-        $divisa = settings::where('name','divisa')->first();
+        $data = Summary::where('created_at','<=',$hoy)->get();
+        // $summary = Summary::all();
+        $categories = Categories::all();
+        $account = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
 
         return $data;
     }
      public function index(Request $request)
    {
 
-    $r=(new summaryController)->pass($act='pdf');
+    $r=(new SummaryController)->pass($act='pdf');
       if($r=8 || $r=1 || $r=2 || $r=3 || $r=4 || $r=5 || $r=6 || $r=7   ){
         //$hoy=date('Y-m-d',strtotime('today - 1 days'));
         $hoy = new DateTime('now');
 
-        $summary = summary::where('created_at','<=',$hoy)->where('future','=',1)->get();
-        // $summary = summary::all();
-        $categories = categories::all();
-        $atributos = attributes::all();
-        $atributostours = attributestours::all();
-        $tours = tours::all();
-        $account = account::all();
-        $divisa = settings::where('name','divisa')->first();
+        $summary = Summary::where('created_at','<=',$hoy)->where('future','=',1)->get();
+        // $summary = Summary::all();
+        $categories = Categories::all();
+        $atributos = Attributes::all();
+        $atributostours = AttributesTours::all();
+        $tours = Tours::all();
+        $account = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
 
         $total=array();
         $totaliva=array();
@@ -79,38 +79,38 @@ class pdfController extends Controller
 
           if($tipo==1){
           $filter[] = array('categories_id','=',$tipo);
-          $summary = summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
+          $summary =Summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
 
 
           }else{
           $filter[] = array('type','=',$tipo);
-          $summary = summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
+          $summary = Summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
           }
         }
         if(isset($cuentas)) {
 
           $filter[] = array('account_id','=',$cuentas);
-          $summary = summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
+          $summary = Summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
 
         }
         if(isset($categorias)) {
           $filter[] = array('categories_id','=',$categorias);
-          $summary = summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
+          $summary = Summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
 
         }
         if(isset($subcategorias)) {
           $filter[] = array('id_attr','=',$subcategorias);
-          $summary = summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
+          $summary = Summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
         }
 
         if(isset($tf)) {
           $filter[] = array('tours_id','=',$tf);
-          $summary = summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
+          $summary = Summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
 
         }
         if(isset($subcatetours)) {
           $filter[] = array('id_attr_tours','=',$subcatetours);
-          $summary = summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
+          $summary = Summary::where($filter)->where('created_at','<=',$hoy)->where('future','=',1)->get();
 
         }
 
@@ -121,7 +121,7 @@ class pdfController extends Controller
           $finish = new Datetime($finish);
 
 
-          $summary = summary::whereBetween('created_at', [$start, $finish])->where($filter)->where('future','=',1)->get();
+          $summary = Summary::whereBetween('created_at', [$start, $finish])->where($filter)->where('future','=',1)->get();
         }elseif((isset($dias))){
 
             if($dias==30){
@@ -137,12 +137,12 @@ class pdfController extends Controller
               $start=date('Y-m-d',strtotime('today'));
             }
 
-          $summary = summary::whereBetween('created_at', [$start, $hoy])->where($filter)->where('future','=',1)->get();
+          $summary = Summary::whereBetween('created_at', [$start, $hoy])->where($filter)->where('future','=',1)->get();
         }else{
             if($filter) {
-                $summary = summary::where('created_at','<=',$hoy)->where($filter)->where('future','=',1)->get();
+                $summary = Summary::where('created_at','<=',$hoy)->where($filter)->where('future','=',1)->get();
             }else {
-                $summary = summary::where('created_at','<=',$hoy)->where('future','=',1)->get();
+                $summary = Summary::where('created_at','<=',$hoy)->where('future','=',1)->get();
             }
 
 
@@ -150,25 +150,25 @@ class pdfController extends Controller
 
 
         foreach ($summary as $s) {
-          $name_account = account::find($s->account_id);
+          $name_account = Account::find($s->account_id);
           $s->setAttribute('name_account',$name_account->name);
-          $name_categories = categories::find($s->categories_id);
+          $name_categories = Categories::find($s->categories_id);
           $s->setAttribute('name_categories',$name_categories->name);
 
-          $name_tours = tours::find($s->tours_id);
+          $name_tours = Tours::find($s->tours_id);
          if($name_tours!=null){
              $s->setAttribute('name_tours',$name_tours->name);
          }
 
-          if(attached::where('summary_id',$s->id)->exists()){
-            $data_attached = attached::where('summary_id',$s->id)->first();
+          if(Attached::where('summary_id',$s->id)->exists()){
+            $data_attached = Attached::where('summary_id',$s->id)->first();
             $s->setAttribute('attached',$data_attached);
           }else{
             $s->setAttribute('attached',null);
           }
 
-          if(attributes::where('id_categorie',$s->account_id)->exists()){
-            $data_attributes = attributes::where('id_categorie',$s->account_id)->first();
+          if(Attributes::where('id_categorie',$s->account_id)->exists()){
+            $data_attributes = Attributes::where('id_categorie',$s->account_id)->first();
             $s->setAttribute('attributes',$data_attributes);
           }else{
             $s->setAttribute('attributes',null);
@@ -260,18 +260,18 @@ class pdfController extends Controller
      public function indexfuturo(Request $request)
    {
 
-      $r=(new summaryController)->pass($act='pdf');
+      $r=(new SummaryController)->pass($act='pdf');
       if($r>0){
         $hoy = new DateTime('now');
 
-        $summary = summary::where('created_at','>',$hoy)->get();
-        // $summary = summary::all();
-        $categories = categories::all();
-        $atributos = attributes::all();
-        $atributostours = attributestours::all();
-        $tours = tours::all();
-        $account = account::all();
-        $divisa = settings::where('name','divisa')->first();
+        $summary = Summary::where('created_at','>',$hoy)->get();
+        // $summary = Summary::all();
+        $categories = Categories::all();
+        $atributos = Attributes::all();
+        $atributostours = AttributesTours::all();
+        $tours = Tours::all();
+        $account = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
 
         $total=array();
         $totaliva=array();
@@ -291,38 +291,38 @@ class pdfController extends Controller
 
           if($tipo==1){
           $filter[] = array('categories_id','=',$tipo);
-          $summary = summary::where($filter)->where('created_at','>',$hoy)->get();
+          $summary = Summary::where($filter)->where('created_at','>',$hoy)->get();
 
 
           }else{
           $filter[] = array('type','=',$tipo);
-          $summary = summary::where($filter)->where('created_at','>',$hoy)->get();
+          $summary = Summary::where($filter)->where('created_at','>',$hoy)->get();
           }
         }
         if(isset($cuentas)) {
 
           $filter[] = array('account_id','=',$cuentas);
-          $summary = summary::where($filter)->where('created_at','>',$hoy)->get();
+          $summary = Summary::where($filter)->where('created_at','>',$hoy)->get();
 
         }
         if(isset($categorias)) {
           $filter[] = array('categories_id','=',$categorias);
-          $summary = summary::where($filter)->where('created_at','>',$hoy)->get();
+          $summary = Summary::where($filter)->where('created_at','>',$hoy)->get();
 
         }
         if(isset($subcategorias)) {
           $filter[] = array('id_attr','=',$subcategorias);
-          $summary = summary::where($filter)->where('created_at','>',$hoy)->get();
+          $summary = Summary::where($filter)->where('created_at','>',$hoy)->get();
         }
 
         if(isset($tf)) {
           $filter[] = array('tours_id','=',$tf);
-          $summary = summary::where($filter)->where('created_at','>',$hoy)->get();
+          $summary = Summary::where($filter)->where('created_at','>',$hoy)->get();
 
         }
         if(isset($subcatetours)) {
           $filter[] = array('id_attr_tours','=',$subcatetours);
-          $summary = summary::where($filter)->where('created_at','>',$hoy)->get();
+          $summary = Summary::where($filter)->where('created_at','>',$hoy)->get();
 
         }
 
@@ -333,7 +333,7 @@ class pdfController extends Controller
           $finish = new Datetime($finish);
 
 
-          $summary = summary::whereBetween('created_at', [$start, $finish])->where($filter)->get();
+          $summary = Summary::whereBetween('created_at', [$start, $finish])->where($filter)->get();
         }elseif((isset($dias))){
 
             if($dias==30){
@@ -349,34 +349,34 @@ class pdfController extends Controller
               $start=date('Y-m-d',strtotime('today + 1 days'));
             }
 
-          $summary = summary::whereBetween('created_at', [$hoy, $start])->where($filter)->get();
+          $summary = Summary::whereBetween('created_at', [$hoy, $start])->where($filter)->get();
         }else{
 
-          $summary = summary::where('created_at','>',$hoy)->where($filter)->get();
+          $summary = Summary::where('created_at','>',$hoy)->where($filter)->get();
 
         }
 
 
         foreach ($summary as $s) {
-          $name_account = account::find($s->account_id);
+          $name_account = Account::find($s->account_id);
           $s->setAttribute('name_account',$name_account->name);
-          $name_categories = categories::find($s->categories_id);
+          $name_categories = Categories::find($s->categories_id);
           $s->setAttribute('name_categories',$name_categories->name);
 
-          $name_tours = tours::find($s->tours_id);
+          $name_tours = Tours::find($s->tours_id);
          if($name_tours!=null){
              $s->setAttribute('name_tours',$name_tours->name);
          }
 
-          if(attached::where('summary_id',$s->id)->exists()){
-            $data_attached = attached::where('summary_id',$s->id)->first();
+          if(Attached::where('summary_id',$s->id)->exists()){
+            $data_attached = Attached::where('summary_id',$s->id)->first();
             $s->setAttribute('attached',$data_attached);
           }else{
             $s->setAttribute('attached',null);
           }
 
-          if(attributes::where('id_categorie',$s->account_id)->exists()){
-            $data_attributes = attributes::where('id_categorie',$s->account_id)->first();
+          if(Attributes::where('id_categorie',$s->account_id)->exists()){
+            $data_attributes = Attributes::where('id_categorie',$s->account_id)->first();
             $s->setAttribute('attributes',$data_attributes);
           }else{
             $s->setAttribute('attributes',null);

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\categories;
-use App\summary;
-use App\attributes;
-use App\bitacora;
+use App\Models\Categories;
+use App\Models\Summary;
+use App\Models\Attributes;
+use App\Models\Bitacora;
 use Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class balanceController extends Controller
+class BalanceController extends Controller
 {
 
     public function getAmount($in=0){
@@ -58,15 +58,15 @@ class balanceController extends Controller
             $finish =Carbon::parse($finish);
 
             $dataTmp = array();
-            $r=(new summaryController)->pass($act='categoria');
+            $r=(new SummaryController)->pass($act='categoria');
             if($r>0){
-                $categories = categories::whereNotIn('id', [1])->get();
+                $categories = Categories::whereNotIn('id', [1])->get();
                 if( $categorias) {
-                    $categoriaselet = categories::where('id','=',$categorias)->first();
+                    $categoriaselet = Categories::where('id','=',$categorias)->first();
 
                     if($categoriaselet->id){
-                        $summary = summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
-                        $attrs = attributes::where('id_categorie','=',$categoriaselet->id)->get();
+                        $summary = Summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
+                        $attrs = Attributes::where('id_categorie','=',$categoriaselet->id)->get();
 //
                         $data = DB::table('summary')
                             ->join('categories','categories.id','=','summary.categories_id')
@@ -81,7 +81,7 @@ class balanceController extends Controller
                             $summaryCreateAt = Carbon::parse($item->created_at);
                             $numberOf = $summaryCreateAt->format('m-Y');
                             if ($item->id_attr) {
-                                $lados = attributes::where('id','=',$item->id_attr)->first();
+                                $lados = Attributes::where('id','=',$item->id_attr)->first();
 //                    $lados = DB::table('attr_values')->where('id_categorie','=',$item->categories_id)->get();
                                 $item->subcats = $lados;
                             }else {
@@ -117,7 +117,7 @@ class balanceController extends Controller
                         $summaryCreateAt = Carbon::parse($item->created_at);
                         $numberOf = $summaryCreateAt->format('m-Y');
                         if ($item->id_attr) {
-                            $lados = attributes::where('id','=',$item->id_attr)->first();
+                            $lados = Attributes::where('id','=',$item->id_attr)->first();
 //                    $lados = DB::table('attr_values')->where('id_categorie','=',$item->categories_id)->get();
                             $item->subcats = $lados;
                         }else {
@@ -139,9 +139,9 @@ class balanceController extends Controller
                         $dataTmp[$d] = $this->filterData($data,$d);
                     }
                     $summary = array();
-                    $attrs = categories::whereNotIn('id', [1])->get();
+                    $attrs = Categories::whereNotIn('id', [1])->get();
                     $categoriaselet = array();
-                    $catesnull= categories::all();
+                    $catesnull= Categories::all();
                     $data = array();
 
                     return view('vendor.adminlte.balance.balance',
@@ -162,18 +162,18 @@ class balanceController extends Controller
             }
 
             $start = Carbon::parse($start);
-            $finish =Carbon::parse($finish);
+            $finish = Carbon::parse($finish);
 
             $dataTmp = array();
-            $r=(new summaryController)->pass($act='categoria');
+            $r=(new SummaryController)->pass($act='categoria');
             if($r>0){
-                $categories = categories::whereNotIn('id', [1])->get();
+                $categories = Categories::whereNotIn('id', [1])->get();
                 if( $categorias) {
-                    $categoriaselet = categories::where('id','=',$categorias)->first();
+                    $categoriaselet = Categories::where('id','=',$categorias)->first();
 
                     if($categoriaselet->id){
-                        $summary = summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
-                        $attrs = attributes::where('id_categorie','=',$categoriaselet->id)->get();
+                        $summary = Summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
+                        $attrs = Attributes::where('id_categorie','=',$categoriaselet->id)->get();
 //
                         $data = DB::table('summary')
                             ->join('categories','categories.id','=','summary.categories_id')
@@ -188,7 +188,7 @@ class balanceController extends Controller
                             $summaryCreateAt = Carbon::parse($item->created_at);
                             $numberOf = $summaryCreateAt->format('m-Y');
                             if ($item->id_attr) {
-                                $lados = attributes::where('id','=',$item->id_attr)->first();
+                                $lados = Attributes::where('id','=',$item->id_attr)->first();
 //                    $lados = DB::table('attr_values')->where('id_categorie','=',$item->categories_id)->get();
                                 $item->subcats = $lados;
                             }else {
@@ -238,15 +238,15 @@ class balanceController extends Controller
         $finish =Carbon::parse($finish);
 
         $dataTmp = array();
-        $r=(new summaryController)->pass($act='categoria');
+        $r=(new SummaryController)->pass($act='categoria');
         if($r>0){
-            $categories = categories::whereNotIn('id', [1])->get();
+            $categories = Categories::whereNotIn('id', [1])->get();
             if( $categorias) {
-                $categoriaselet = categories::where('id','=',$categorias)->first();
+                $categoriaselet = Categories::where('id','=',$categorias)->first();
 
                 if($categoriaselet->id){
-                    $summary = summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
-                    $attrs = attributes::where('id_categorie','=',$categoriaselet->id)->get();
+                    $summary = Summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
+                    $attrs = Attributes::where('id_categorie','=',$categoriaselet->id)->get();
 //
                     $data = DB::table('summary')
                         ->join('categories','categories.id','=','summary.categories_id')
@@ -261,7 +261,7 @@ class balanceController extends Controller
                         $summaryCreateAt = Carbon::parse($item->created_at);
                         $numberOf = $summaryCreateAt->format('m-Y');
                         if ($item->id_attr) {
-                            $lados = attributes::where('id','=',$item->id_attr)->first();
+                            $lados = Attributes::where('id','=',$item->id_attr)->first();
 //                    $lados = DB::table('attr_values')->where('id_categorie','=',$item->categories_id)->get();
                             $item->subcats = $lados;
                         }else {
@@ -297,7 +297,7 @@ class balanceController extends Controller
                     $summaryCreateAt = Carbon::parse($item->created_at);
                     $numberOf = $summaryCreateAt->format('m-Y');
                     if ($item->id_attr) {
-                        $lados = attributes::where('id','=',$item->id_attr)->first();
+                        $lados = Attributes::where('id','=',$item->id_attr)->first();
 //                    $lados = DB::table('attr_values')->where('id_categorie','=',$item->categories_id)->get();
                         $item->subcats = $lados;
                     }else {
@@ -319,9 +319,9 @@ class balanceController extends Controller
                     $dataTmp[$d] = $this->filterData($data,$d);
                 }
                 $summary = array();
-                $attrs = categories::whereNotIn('id', [1])->get();
+                $attrs = Categories::whereNotIn('id', [1])->get();
                 $categoriaselet = array();
-                $catesnull= categories::all();
+                $catesnull= Categories::all();
                 $data = array();
 
                 return view('vendor.adminlte.balance.balance',
@@ -344,17 +344,17 @@ class balanceController extends Controller
         $finish =Carbon::parse($finish);
 
         $dataTmp = array();
-        $r=(new summaryController)->pass($act='categoria');
+        $r=(new SummaryController)->pass($act='categoria');
         if($r>0){
-//            $categories = categories::all();
-            $categories = categories::whereNotIn('id', [1])->get();
+//            $categories = Categories::all();
+            $categories = Categories::whereNotIn('id', [1])->get();
 
             if( $categorias) {
-                $categoriaselet = categories::where('id','=',$categorias)->first();
+                $categoriaselet = Categories::where('id','=',$categorias)->first();
 
                 if($categoriaselet->id){
-                    $summary = summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
-                    $attrs = attributes::where('id_categorie','=',$categoriaselet->id)->get();
+                    $summary = Summary::where('categories_id','=',$categoriaselet->id)->where('future','=',1)->get();
+                    $attrs = Attributes::where('id_categorie','=',$categoriaselet->id)->get();
 //
                     $data = DB::table('summary')
                         ->join('categories','categories.id','=','summary.categories_id')
@@ -369,7 +369,7 @@ class balanceController extends Controller
                         $summaryCreateAt = Carbon::parse($item->created_at);
                         $numberOf = $summaryCreateAt->format('m-Y');
                         if ($item->id_attr) {
-                            $lados = attributes::where('id','=',$item->id_attr)->first();
+                            $lados = Attributes::where('id','=',$item->id_attr)->first();
 //                    $lados = DB::table('attr_values')->where('id_categorie','=',$item->categories_id)->get();
                             $item->subcats = $lados;
                         }else {
@@ -405,7 +405,7 @@ class balanceController extends Controller
                     $summaryCreateAt = Carbon::parse($item->created_at);
                     $numberOf = $summaryCreateAt->format('m-Y');
                     if ($item->id_attr) {
-                        $lados = attributes::where('id','=',$item->id_attr)->first();
+                        $lados = Attributes::where('id','=',$item->id_attr)->first();
 //                    $lados = DB::table('attr_values')->where('id_categorie','=',$item->categories_id)->get();
                         $item->subcats = $lados;
                     }else {
@@ -427,9 +427,9 @@ class balanceController extends Controller
                     $dataTmp[$d] = $this->filterData($data,$d);
                 }
                 $summary = array();
-                $attrs = categories::whereNotIn('id', [1])->get();
+                $attrs = Categories::whereNotIn('id', [1])->get();
                 $categoriaselet = array();
-                $catesnull= categories::all();
+                $catesnull= Categories::all();
                 $data = array();
 
                 return view('vendor.adminlte.balance.balance',

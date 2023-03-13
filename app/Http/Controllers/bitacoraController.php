@@ -4,23 +4,23 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use App\bitacora;
-use App\User;
+use App\Models\Bitacora;
+use App\Models\User;
 use Auth;
 use Datetime;
 
-class bitacoraController extends Controller
+class BitacoraController extends Controller
 {
     
       public function index(Request $request)
    {    
 
 
-     $r=(new summaryController)->pass($act='bitacora');
+     $r=(new SummaryController)->pass($act='bitacora');
         if($r>0){
 
         $hoy = new DateTime('now');   
-        $bitacora = bitacora::all();
+        $bitacora = Bitacora::all();
         $user = User::all();
 		    $start = $request->input('start');
 		    $finish = $request->input('finish');
@@ -32,17 +32,17 @@ class bitacoraController extends Controller
         $filter=array();      
         if(isset($tipo)) {
           $filter[] = array('type','=',$tipo);
-          $bitacora = bitacora::where($filter)->get();       
+          $bitacora = Bitacora::where($filter)->get();       
         }
         if(isset($usuarios)) {  
 
           $filter[] = array('id_user','=',$usuarios);
-          $bitacora = bitacora::where($filter)->get();
+          $bitacora = Bitacora::where($filter)->get();
 
          }
         if(isset($actividad)) {  
           $filter[] = array('activity','=',$actividad);
-          $bitacora = bitacora::where($filter)->get();
+          $bitacora = Bitacora::where($filter)->get();
         }
 
         if((isset($start)) and (isset($finish))){
@@ -50,7 +50,7 @@ class bitacoraController extends Controller
           $finish = new Datetime($finish);
 
 
-          $bitacora1 = bitacora::whereBetween('created_date', [$start, $finish])->where($filter)->get();
+          $bitacora1 = Bitacora::whereBetween('created_date', [$start, $finish])->where($filter)->get();
             }elseif((isset($dias))){
 
             if($dias==30){
@@ -66,18 +66,23 @@ class bitacoraController extends Controller
               $start=date('Y-m-d',strtotime('today'));
             }
 
-          $bitacora = bitacora::whereBetween('created_date', [$start, $hoy])->where($filter)->get();
+          $bitacora = Bitacora::whereBetween('created_date', [$start, $hoy])->where($filter)->get();
         }else{
 
-          $bitacora = bitacora::where('created_date','<=',$hoy)->get();
+          $bitacora = Bitacora::where('created_date','<=',$hoy)->get();
 
         }
 
 
         foreach ($bitacora as $s) {
-          $name_user = User::find($s->id_user);
-          $s->setAttribute('name_user',$name_user->name);
+            $name_user = User::find($s->id_user);
+            if ($name_user) {
+                $s->setAttribute('name_user', $name_user->name);
+            } else {
+                $s->setAttribute('name_user', 'Unknown user');
+            }
         }
+      
       
 
         return view('vendor.adminlte.bitacora.bitacora',['bitacora'=>$bitacora,'user'=>$user]);
