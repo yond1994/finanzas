@@ -3,28 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\categories;
-use App\summary;
-use App\attached;
-use App\account;
-use App\attributes;
-use App\bitacora;
-use App\tours;
-use App\attributestours;
-use App\settings;
-use App\transfer;
+use App\Models\Categories;
+use App\Models\Summary;
+use App\Models\Attached;
+use App\Models\Account;
+use App\Models\Attributes;
+use App\Models\Bitacora;
+use App\Models\Tours;
+use App\Models\Attributestours;
+use App\Models\Settings;
+use App\Models\Transfer;
 use Auth;
 use Datetime;
 
 
 
-class toursController extends Controller
+class ToursController extends Controller
 {
      public function index()
    {
-      $r=(new summaryController)->pass($act='tours');
+      $r=(new SummaryController)->pass($act='tours');
       if($r>0 ){
-        $tours = tours::all();
+        $tours = Tours::all();
         return view('vendor.adminlte.tours.tours',['tours'=>$tours]);
       }else{
         return view('vendor.adminlte.permission',['summary'=>null]);
@@ -34,7 +34,7 @@ class toursController extends Controller
    public function save(Request $request)
 	{
 
-     $r=(new summaryController)->pass($act='tours');
+     $r=(new SummaryController)->pass($act='tours');
       if($r==1 || $r==2 || $r==3 || $r==6  ){
 
     		$hoy=date('Y-m-d H:m:s',strtotime('today'));
@@ -46,9 +46,9 @@ class toursController extends Controller
     	    	'description' => $request->description,
 
     	    	);
-    	   	$id=tours::insertGetId($valores);
+    	   	$id=Tours::insertGetId($valores);
 
-    		  $bitacora =  new bitacora;
+    		  $bitacora =  new Bitacora;
     		  $bitacora->type="add";
     		  $bitacora->created_date = $hoy;
     		  $bitacora->activity="tours";
@@ -63,11 +63,11 @@ class toursController extends Controller
 
 	public function edit(Request $request, $id){
 
-      $r=(new summaryController)->pass($act='tours');
+      $r=(new SummaryController)->pass($act='tours');
       if($r==1 || $r==2 || $r==4 || $r==7  ){
 
-    		$data = tours::where('id',$id)->first();
-    		$data1 = attributestours::where('id_tours',$id)->get();
+    		$data = Tours::where('id',$id)->first();
+    		$data1 = AttributesTours::where('id_tours',$id)->get();
 
     		return view('vendor.adminlte.tours.edit',['data'=>$data,'data1'=>$data1]);
       }else{
@@ -93,21 +93,21 @@ class toursController extends Controller
 					    		'id_tours' => $id,
 					    		);
 				    	if($ids[$n]==0){
-				    		attributestours::insert($valores);
+				    		AttributesTours::insert($valores);
 				    	}else{
-				    		attributestours::where('id',$ids[$n])->update($valores);
+				    		AttributesTours::where('id',$ids[$n])->update($valores);
 				    	}
 
 		}
 
 
 
-        $categories = tours::find($id);
+        $categories = Tours::find($id);
         $categories->name = $request->name;
 		    $categories->description = $request->description;
 		    $categories->save();
 
-		    $bitacora = new bitacora;
+		    $bitacora = new Bitacora;
         $bitacora->created_date = $hoy;
         $bitacora->type="update";
         $bitacora->id_activity=$id;
@@ -121,12 +121,12 @@ class toursController extends Controller
 	public function destroy( $id)
 	{
 
-   $r=(new summaryController)->pass($act='tours');
+   $r=(new SummaryController)->pass($act='tours');
     if($r==1 || $r==5 || $r==6 || $r==7  ){
   		$hoy=date('Y-m-d H:m:s',strtotime('today'));
           $log = Auth::id();
 
-  		if($data1 = summary::where('tours_id',$id)->exists()){
+  		if($data1 = Summary::where('tours_id',$id)->exists()){
   			$messaje = array(
                   'status' => 'error',
                   'messaje' => 'no se pudo Eliminar',
@@ -135,13 +135,13 @@ class toursController extends Controller
   		}else{
 
 
-  		$categories = tours::find($id);
+  		$categories = Tours::find($id);
 
-  		$data = tours::where('id',$id)->first();
-      	$attributes = attributestours::where('id_tours',$id)->delete();
+  		$data = Tours::where('id',$id)->first();
+      	$attributes = AttributesTours::where('id_tours',$id)->delete();
           $categories->delete();
 
-          $bitacora = new bitacora;
+          $bitacora = new Bitacora;
           $bitacora->created_date = $hoy;
           $bitacora->type="delete";
           $bitacora->id_activity=$id;
@@ -157,12 +157,12 @@ class toursController extends Controller
     public function destroyattr( $id)
 	{
 
-    $r=(new summaryController)->pass($act='tours');
+    $r=(new SummaryController)->pass($act='tours');
     if($r==1 || $r==5 || $r==6 || $r==7  ){
 		$hoy=date('Y-m-d H:m:s',strtotime('today'));
         $log = Auth::id();
 
-		if($data1 = summary::where('id_attr_tours',$id)->exists()){
+		if($data1 = Summary::where('id_attr_tours',$id)->exists()){
 			$messaje = array(
                 'status' => 'error',
                 'messaje' => 'no se pudo Eliminar',
@@ -170,10 +170,10 @@ class toursController extends Controller
 	     return view('vendor.adminlte.tours.error',['messaje'=>$messaje]);
 		}else{
 
-		$categories = attributestours::find($id);
+		$categories = AttributesTours::find($id);
 
         $categories->delete();
-        $bitacora = new bitacora;
+        $bitacora = new Bitacora;
         $bitacora->created_date = $hoy;
         $bitacora->type="delete";
         $bitacora->id_activity=$id;
@@ -188,7 +188,7 @@ class toursController extends Controller
     }
 
     public function view_attr($id=null){
-    	$tours = tours::find($id);
+    	$tours = Tours::find($id);
 
     	return view('vendor.adminlte.tours.attr',['tours'=>$tours]);
     }
@@ -204,30 +204,30 @@ class toursController extends Controller
 	    		'price' => $values[$n],
 	    		'id_tours' => $id
 	    		);
-	    	attributestours::insert($valores);
+	    	AttributesTours::insert($valores);
     	}
     	return redirect('tours/tours');
     }
 
     public function get_all($id){
-    	$data = attributestours::where('id_tours',$id)->get();
+    	$data = AttributesTours::where('id_tours',$id)->get();
     	return response()->json($data);
     }
 
     public function ver($id){
 
-    $r=(new summaryController)->pass($act='tours');
+    $r=(new SummaryController)->pass($act='tours');
     if($r>0  ){
 
-        $data = attributestours::where('id_tours',$id)->get();
-        $tour = tours::where('id',$id)->first();
-        $divisa = settings::where('name','divisa')->first();
+        $data = AttributesTours::where('id_tours',$id)->get();
+        $tour = Tours::where('id',$id)->first();
+        $divisa = Settings::where('name','divisa')->first();
 
 
          //total add
         foreach ($data as $a) {
          $totale = 0;
-            $tmp = summary::where('id_attr_tours',$a->id)->get();
+            $tmp = Summary::where('id_attr_tours',$a->id)->get();
 
             foreach ($tmp as $t) {
 
@@ -242,7 +242,7 @@ class toursController extends Controller
          //total out
         foreach ($data as $b) {
          $totals = 0;
-            $tmp = summary::where('id_attr_tours',$b->id)->get();
+            $tmp = Summary::where('id_attr_tours',$b->id)->get();
 
             foreach ($tmp as $t) {
 
@@ -256,7 +256,7 @@ class toursController extends Controller
         //total final
          foreach ($data as $c) {
          $totalf = 0;
-            $tmp = summary::where('id_attr_tours',$c->id)->get();
+            $tmp = Summary::where('id_attr_tours',$c->id)->get();
 
             foreach ($tmp as $t) {
 
@@ -281,25 +281,25 @@ class toursController extends Controller
 
     public function fecha(Request $request, $id=null){
 
-      $r=(new summaryController)->pass($act='tours');
+      $r=(new SummaryController)->pass($act='tours');
       if($r>0  ){
         $hoy = new DateTime('now');
 
-        $summary = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+        $summary = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
 
 
-        // $summary = summary::all();
-        $categories = categories::all();
-        $tours = tours::all();
-        $account = account::all();
-        $divisa = settings::where('name','divisa')->first();
+        // $summary = Summary::all();
+        $categories = Categories::all();
+        $tours = Tours::all();
+        $account = Account::all();
+        $divisa = Settings::where('name','divisa')->first();
 
-        $movimientosa = attributestours::where('id',$id)->get();
+        $movimientosa = AttributesTours::where('id',$id)->get();
 
-        $namefecha = attributestours::where('id',$id)->first();
+        $namefecha = AttributesTours::where('id',$id)->first();
 
         $idtours=$namefecha->id_tours;
-        $nametour= tours::where('id',$idtours)->first();
+        $nametour= Tours::where('id',$idtours)->first();
 
 
         $total=array();
@@ -325,38 +325,38 @@ class toursController extends Controller
 
           if($tipo==1){
           $filter[] = array('categories_id','=',$tipo);
-          $summary = summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
 
 
           }else{
           $filter[] = array('type','=',$tipo);
-          $summary = summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
           }
         }
         if(isset($cuentas)) {
 
           $filter[] = array('account_id','=',$cuentas);
-          $summary = summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
 
         }
         if(isset($categorias)) {
           $filter[] = array('categories_id','=',$categorias);
-          $summary = summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
 
         }
         if(isset($subcategorias)) {
           $filter[] = array('id_attr','=',$subcategorias);
-          $summary = summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
         }
 
          if(isset($tf)) {
           $filter[] = array('tours_id','=',$tf);
-          $summary = summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
 
         }
         if(isset($subcatetours)) {
           $filter[] = array('id_attr_tours','=',$subcatetours);
-          $summary = summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::where($filter)->where('created_at','=<',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
 
         }
 
@@ -368,7 +368,7 @@ class toursController extends Controller
           $finish = new Datetime($finish);
 
 
-          $summary = summary::whereBetween('created_at', [$start, $finish])->where($filter)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::whereBetween('created_at', [$start, $finish])->where($filter)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
         }elseif((isset($dias))){
 
             if($dias==30){
@@ -384,39 +384,39 @@ class toursController extends Controller
               $start=date('Y-m-d',strtotime('today'));
             }
 
-          $summary = summary::whereBetween('created_at', [$start, $hoy])->where($filter)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+          $summary = Summary::whereBetween('created_at', [$start, $hoy])->where($filter)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
 
         } else{
             if($filter) {
-                $summary = summary::where('created_at','<=',$hoy)->where($filter)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+                $summary = Summary::where('created_at','<=',$hoy)->where($filter)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
             }else  {
-                $summary = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
+                $summary = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours','=',$id)->get();
             }
         }
 
 
         foreach ($summary as $s) {
-          $name_account = account::find($s->account_id);
+          $name_account = Account::find($s->account_id);
           $s->setAttribute('name_account',$name_account->name);
 
-          $name_categories = categories::find($s->categories_id);
+          $name_categories = Categories::find($s->categories_id);
           $s->setAttribute('name_categories',$name_categories->name);
 
 
-         $name_tours = tours::find($s->tours_id);
+         $name_tours = Tours::find($s->tours_id);
          if($name_tours!=null){
              $s->setAttribute('name_tours',$name_tours->name);
          }
 
-          if(attached::where('summary_id',$s->id)->exists()){
-            $data_attached = attached::where('summary_id',$s->id)->first();
+          if(Attached::where('summary_id',$s->id)->exists()){
+            $data_attached = Attached::where('summary_id',$s->id)->first();
             $s->setAttribute('attached',$data_attached);
           }else{
             $s->setAttribute('attached',null);
           }
 
-          if(attributes::where('id_categorie',$s->account_id)->exists()){
-            $data_attributes = attributes::where('id_categorie',$s->account_id)->first();
+          if(Attributes::where('id_categorie',$s->account_id)->exists()){
+            $data_attributes = Attributes::where('id_categorie',$s->account_id)->first();
             $s->setAttribute('attributes',$data_attributes);
           }else{
             $s->setAttribute('attributes',null);
@@ -500,9 +500,9 @@ class toursController extends Controller
         foreach ($movimientosa as $a) {
          $totale = 0;
             if($filter) {
-                $tmp = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->where($filter)->get();
+                $tmp = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->where($filter)->get();
             }else {
-                $tmp = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->get();
+                $tmp = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->get();
             }
 
 
@@ -520,9 +520,9 @@ class toursController extends Controller
         foreach ($movimientosa as $b) {
          $totals = 0;
          if($filter) {
-             $tmp = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->where($filter)->get();
+             $tmp = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->where($filter)->get();
          } else {
-             $tmp = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->get();
+             $tmp = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->get();
          }
 
 
@@ -539,9 +539,9 @@ class toursController extends Controller
          foreach ($movimientosa as $c) {
          $totalf = 0;
          if($filter) {
-             $tmp = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->where($filter)->get();
+             $tmp = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->where($filter)->get();
          }else {
-             $tmp = summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->get();
+             $tmp = Summary::where('created_at','<=',$hoy)->where('future','=',1)->where('id_attr_tours',$a->id)->get();
          }
 
 
@@ -567,7 +567,7 @@ class toursController extends Controller
     }
 
     public function select(){
-       $data = tours::all();
+       $data = Tours::all();
      return response()->json($data);
     }
 
